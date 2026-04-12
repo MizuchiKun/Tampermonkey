@@ -13,6 +13,22 @@
     // 'Spript-wide' globals.
     let geminiButtons = null;
 
+    /*** Functions ***/
+    function RemoveGeminiButtons(buttons) {
+        let removedButtons = false;
+        for (const button of buttons) {
+            if (button.style.display !== "None") {
+                button.style.display = "None";
+                removedButtons = true;
+            }
+        }
+
+        if (removedButtons) {
+            console.log(`MizuchiKun: Removed Gemini buttons.`);
+        }
+    }
+
+    /*** Events ***/
     window.addEventListener("load", (e) => {
         setTimeout(() => {
             geminiButtons = document.getElementsByClassName('you-chat-entrypoint-button');
@@ -25,11 +41,21 @@
     window.addEventListener("yt-navigate-finish", (e) => {
         // Wait a bit to guarantee the buttons are loaded.
         setTimeout(() => {
-            for (let i = 0; i < geminiButtons.length; i++) {
-                geminiButtons[i].style.display = "None";
-            }
-            console.log(`MizuchiKun: Removed Gemini buttons.`);
+            RemoveGeminiButtons(geminiButtons);
         }, 2500);
+    });
+
+    window.addEventListener('fullscreenchange', (event) => {
+        // I literally just need this because the non-fullscreen button isn't loaded when going to the playlist's next video while in fullscreen.
+        // And therefore it's not removed, so I need to do it again when exiting fullscreen.
+        // Oddly enough, this is not an issue when you choose one of the suggested videos at the end of a non-playlist video. Then, the buttons stay gone??
+        const isFullscreen = document.fullscreenElement !== null;
+        if (!isFullscreen) {
+            // Wait a bit to guarantee the buttons are loaded.
+            setTimeout(() => {
+                RemoveGeminiButtons(geminiButtons);
+            }, 1000);
+        }
     });
 
 })();
